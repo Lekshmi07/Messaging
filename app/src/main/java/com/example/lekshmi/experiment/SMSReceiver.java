@@ -1,16 +1,20 @@
 package com.example.lekshmi.experiment;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Calendar;
 
-public class Main2Activity extends BroadcastReceiver {
+public class SMSReceiver extends BroadcastReceiver
+{
 
     // Get the object of SmsManager
     final SmsManager sms = SmsManager.getDefault();
@@ -39,7 +43,7 @@ public class Main2Activity extends BroadcastReceiver {
                     int duration = Toast.LENGTH_LONG;
                     Toast toast = Toast.makeText(context, "senderNum: "+ senderNum + ", message: " + message, duration);
                     toast.show();
-
+                    putSmsToDatabase(currentMessage,context);
                 } // end for loop
             } // bundle is null
 
@@ -51,4 +55,28 @@ public class Main2Activity extends BroadcastReceiver {
 
 
 
+
+    private void putSmsToDatabase(SmsMessage sms, Context context )
+    {
+        DatabaseHelper dataBaseHelper = new DatabaseHelper(context);
+
+        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
+
+        String mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+// Create SMS row
+        ContentValues values = new ContentValues();
+
+        values.put("address", sms.getOriginatingAddress().toString() );
+        values.put("date", mydate);
+        values.put("body", sms.getMessageBody().toString());
+// values.put( READ, MESSAGE_IS_NOT_READ );
+// values.put( STATUS, sms.getStatus() );
+// values.put( TYPE, MESSAGE_TYPE_INBOX );
+// values.put( SEEN, MESSAGE_IS_NOT_SEEN );
+
+        db.insert("datatable",null,values);
+
+        db.close();
+
+    }
 }
