@@ -1,73 +1,109 @@
 package com.example.lekshmi.experiment;
 
-
+import android.content.ContentValues;
 import android.content.Context;
-import android.database.SQLException;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+
+/**
+ * Created by AppsTeam on 3/15/17.
+ */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    public static final String DATABASE_NAME = "smsDB.db";
+    public static final String TABLE_NAME = "PumpStatus_tb";
+    public static final String SENDER= "Sender";
+    public static final String DATE= "Date";
+    public static final String CONTENT= "Content";
 
-    //public static final String SMS_URI = “/data/data/org.secure.sms/databases/”;
-    public static final String db_name = "sms.db";
-    public static final int version =1;
-    Context context;
+
     public DatabaseHelper(Context context) {
-        super(context, db_name, null, version);
-// TODO Auto-generated constructor stub
-        this.context =context;
+        super(context, DATABASE_NAME, null, 1);
     }
 
-    @Override
     public void onCreate(SQLiteDatabase db) {
-// TODO Auto-generated method stub
 
-        db.execSQL("create table datatable(address varchar(10), date varchar(10), body varchar(30))");
-        Toast.makeText(context, "database created", Toast.LENGTH_SHORT).show();
-        Log.i("dbcreate", "DATABASE HAS CREATED");
+        db.execSQL("create table " + TABLE_NAME + "(" + SENDER + " text primary key," + DATE + " text," + CONTENT + " text)");
+
     }
 
-    public boolean checkDataBase(String db) {
 
-        SQLiteDatabase checkDB = null;
 
-        try {
-            String myPath = "data/data/"+ context.getPackageName() +"/databases/" + db;
-            checkDB = SQLiteDatabase.openDatabase(myPath, null,
-                    SQLiteDatabase.OPEN_READONLY);
-
-        } catch (SQLException e) {
-
-// database does’t exist yet.
-
-        } catch (Exception e) {
-
-        }
-
-        if (checkDB != null) {
-
-            checkDB.close();
-
-        }
-
-        return checkDB != null ? true : false;
-    }
-
-    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-// TODO Auto-generated method stub
-        if (oldVersion >= newVersion)
-            return;
-
-        if (oldVersion == 1) {
-            Log.d("New Version", "Datas can be upgraded");
-        }
-
-        Log.d("Sample Data", "onUpgrade : " + newVersion);
+        db.execSQL("DROP TABLE if EXISTS " + TABLE_NAME);
+        onCreate(db);
     }
 
-}
+    public boolean insertData(String sender, String date, String content) {
 
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        //db.execSQL("insert into " +PLAYERDETAILS_TABLE_NAME+ "(" +PLAYERDETAILS_COLUMN_NAME+ "," +PLAYERDETAILS_COLUMN_PIN+ "," +PLAYERDETAILS_COLUMN_GENDER+ "," +PLAYERDETAILS_COLUMN_HIGHSCORE+ ")values("+name+","+Pin+","+gender+","+highscore+")");
+        ContentValues contentValues = new ContentValues();
+        //String highscore = "0";
+        contentValues.put(SENDER, sender);
+        contentValues.put(DATE, date);
+        contentValues.put(CONTENT, content);
+
+        db.insert(TABLE_NAME, null, contentValues);
+
+        return true;
+    }
+
+    public Cursor getData(String sender) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select * from " + TABLE_NAME + " where " + SENDER + " = " + "'" + sender, null);
+        return res;
+    }
+
+
+
+
+    public int numOfRows() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, TABLE_NAME);
+        return numRows;
+    }
+
+    /*
+    public boolean updatePlayerDetails(String name, String Playerscore, String playerIdentity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        //contentValues.put(PLAYERDETAILS_COLUMN_NAME, name);
+        if (playerIdentity.equals("2")) {
+            contentValues.put(PLAYERDETAILS_COLUMN_HIGHSCORE_2PLAYER, Playerscore);
+            db.update(PLAYERDETAILS_TABLE_NAME, contentValues, "" + PLAYERDETAILS_COLUMN_NAME + "=?", new String[]{name});
+        } else if (playerIdentity.equals("5")) {
+            contentValues.put(PLAYERDETAILS_COLUMN_HIGHSCORE_5PLAYER, Playerscore);
+            db.update(PLAYERDETAILS_TABLE_NAME, contentValues, "" + PLAYERDETAILS_COLUMN_NAME + "=?", new String[]{name});
+        }
+
+        return true;
+    }
+
+
+    public Integer deleteHighScore(Integer id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(PLAYERDETAILS_TABLE_NAME, "" + PLAYERDETAILS_COLUMN_ID + "=?", new String[]{Integer.toString(id)});
+    }
+
+
+    public ArrayList<String> getAllHighScore() {
+        ArrayList<String> arrayList = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("select " + PLAYERDETAILS_COLUMN_ID + " from " + PLAYERDETAILS_TABLE_NAME, null);
+        res.moveToFirst();
+        while (res.isAfterLast() == false) {
+            arrayList.add(res.getString(res.getColumnIndex("" + PLAYERDETAILS_COLUMN_ID)));
+            res.moveToNext();
+
+        }
+        return arrayList;
+    }
+    */
+}
 

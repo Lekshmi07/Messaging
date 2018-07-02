@@ -19,7 +19,10 @@ public class SMSReceiver extends BroadcastReceiver
     // Get the object of SmsManager
     final SmsManager sms = SmsManager.getDefault();
 
+
     public void onReceive(Context context, Intent intent) {
+
+        DatabaseHelper bd=new DatabaseHelper(context);
 
         // Retrieves a map of extended data from the intent.
         final Bundle bundle = intent.getExtras();
@@ -41,10 +44,13 @@ public class SMSReceiver extends BroadcastReceiver
                     Log.i("SmsReceiver", "senderNum: "+ senderNum + "; message: " + message);
 
                     int duration = Toast.LENGTH_LONG;
-                    //if(senderNum.equalsIgnoreCase("9074773148")) {
+                    if(senderNum.equalsIgnoreCase("+919074773148")) {
                         Toast toast = Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message, duration);
                         toast.show();
-                  //  }
+
+
+                        bd.insertData(senderNum,"23",message);
+                    }
                    // putSmsToDatabase(currentMessage,context);
                 } // end for loop
             } // bundle is null
