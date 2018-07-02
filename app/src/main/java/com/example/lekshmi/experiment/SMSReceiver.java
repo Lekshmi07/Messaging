@@ -41,9 +41,11 @@ public class SMSReceiver extends BroadcastReceiver
                     Log.i("SmsReceiver", "senderNum: "+ senderNum + "; message: " + message);
 
                     int duration = Toast.LENGTH_LONG;
-                    Toast toast = Toast.makeText(context, "senderNum: "+ senderNum + ", message: " + message, duration);
-                    toast.show();
-                    putSmsToDatabase(currentMessage,context);
+                    if(senderNum=="9074773148") {
+                        Toast toast = Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message, duration);
+                        toast.show();
+                    }
+                   // putSmsToDatabase(currentMessage,context);
                 } // end for loop
             } // bundle is null
 
@@ -56,27 +58,5 @@ public class SMSReceiver extends BroadcastReceiver
 
 
 
-    private void putSmsToDatabase(SmsMessage sms, Context context )
-    {
-        DatabaseHelper dataBaseHelper = new DatabaseHelper(context);
 
-        SQLiteDatabase db = dataBaseHelper.getWritableDatabase();
-
-        String mydate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-// Create SMS row
-        ContentValues values = new ContentValues();
-
-        values.put("address", sms.getOriginatingAddress().toString() );
-        values.put("date", mydate);
-        values.put("body", sms.getMessageBody().toString());
-// values.put( READ, MESSAGE_IS_NOT_READ );
-// values.put( STATUS, sms.getStatus() );
-// values.put( TYPE, MESSAGE_TYPE_INBOX );
-// values.put( SEEN, MESSAGE_IS_NOT_SEEN );
-
-        db.insert("datatable",null,values);
-
-        db.close();
-
-    }
 }
