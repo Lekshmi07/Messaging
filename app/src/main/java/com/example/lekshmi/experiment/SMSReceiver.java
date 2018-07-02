@@ -41,10 +41,10 @@ public class SMSReceiver extends BroadcastReceiver
                     Log.i("SmsReceiver", "senderNum: "+ senderNum + "; message: " + message);
 
                     int duration = Toast.LENGTH_LONG;
-                    if(senderNum=="9074773148") {
+                    //if(senderNum.equalsIgnoreCase("9074773148")) {
                         Toast toast = Toast.makeText(context, "senderNum: " + senderNum + ", message: " + message, duration);
                         toast.show();
-                    }
+                  //  }
                    // putSmsToDatabase(currentMessage,context);
                 } // end for loop
             } // bundle is null
